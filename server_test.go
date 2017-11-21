@@ -27,6 +27,11 @@ var exampleManifest = `
   }
 }`
 
+var badProvisionRequest = `
+{
+  "uuid": "bad"
+}`
+
 func makeTestManifest() *Manifest {
 	gin.SetMode(gin.TestMode)
 
@@ -39,6 +44,7 @@ func TestServer(t *testing.T) {
 	manifest := makeTestManifest()
 	server := Server{
 		manifest: manifest,
+		manager:  &TestManager{},
 	}
 	server.configure()
 
@@ -64,4 +70,12 @@ func TestServer(t *testing.T) {
 	req.SetBasicAuth(manifest.Id, manifest.Api.Password)
 	server.router.ServeHTTP(resp, req)
 	assert.NotEqual(t, 401, resp.Code)
+
+	// Test bad provision
+	req, _ = http.NewRequest("POST", "/heroku/resources", bytes.NewReader([]byte(badProvisionRequest)))
+	resp = httptest.NewRecorder()
+	req.SetBasicAuth(manifest.Id, manifest.Api.Password)
+	server.router.ServeHTTP(resp, req)
+	assert.Equal(t, 400, resp.Code)
+	assert.Equal(t, `{"error":"Unable to provision resource","status":400}`, resp.Body.String())
 }
