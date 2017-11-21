@@ -14,6 +14,21 @@ type Server struct {
 	manifest *Manifest
 }
 
+func New(file string, manager Manager) (*Server, error) {
+	manifest, err := readManifest(file)
+	if err != nil {
+		return nil, err
+	}
+
+	server := &Server{
+		manifest: manifest,
+		manager:  manager,
+	}
+	server.configure()
+
+	return server, nil
+}
+
 func (s *Server) configure() {
 	router := gin.Default()
 

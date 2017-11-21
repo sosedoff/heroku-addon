@@ -22,7 +22,6 @@ func readManifest(path string) (*Manifest, error) {
 	}
 
 	manifest := &Manifest{}
-
 	if err := json.Unmarshal(data, manifest); err != nil {
 		return nil, err
 	}

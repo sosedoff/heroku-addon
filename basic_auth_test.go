@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestParseAuth(t *testing.T) {
+func Test_parseBasicAuth(t *testing.T) {
 	_, err := parseBasicAuth("foobar")
 	assert.NotNil(t, err)
 	assert.Error(t, ErrNoBasicAuth, err.Error())
