@@ -1,6 +1,6 @@
 # heroku-addon
 
-Heroku Addon SDK for Go application
+Heroku Addon SDK for Go applications
 
 ## Install
 
