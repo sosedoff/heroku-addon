@@ -30,6 +30,7 @@ func New(file string, manager Manager) (*Server, error) {
 }
 
 func (s *Server) configure() {
+	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
 
 	group := router.Group("/heroku")
