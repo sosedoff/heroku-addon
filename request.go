@@ -2,7 +2,7 @@ package addon
 
 type ProvisionRequest struct {
 	UUID         string            `json:"uuid"`
-	HerokuId     string            `json:"heroku_id"`
+	AppId        string            `json:"heroku_id"`
 	Plan         string            `json:"plan"`
 	LogplexToken string            `json:"logplex_token"`
 	Region       string            `json:"region"`
@@ -17,9 +17,9 @@ type ProvisionResponse struct {
 }
 
 type ModifyRequest struct {
-	UUID     string `json:"uuid"`
-	HerokuId string `json:"heroku_id"`
-	Plan     string `json:"plan"`
+	UUID  string `json:"uuid"`
+	AppId string `json:"heroku_id"`
+	Plan  string `json:"plan"`
 }
 
 type ModifyResponse struct {
