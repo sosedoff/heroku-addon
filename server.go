@@ -1,9 +1,11 @@
 package addon
 
 import (
+	"crypto/sha1"
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -38,6 +40,7 @@ func (s *Server) configure() {
 	group.POST("/resources", s.provisionResource)
 	group.PUT("/resources/:id", s.modifyResource)
 	group.DELETE("/resources/:id", s.deleteResource)
+	group.POST("/login", s.handleSSO)
 
 	s.router = router
 }
@@ -130,6 +133,39 @@ func (s *Server) deleteResource(c *gin.Context) {
 	successResponse(c, DeleteResponse{
 		Message: fmt.Sprintf("Resource %s has been deleted", resource.Id),
 	})
+}
+
+func (s *Server) handleSSO(c *gin.Context) {
+	timestamp := c.Request.FormValue("timestamp")
+
+	preToken := fmt.Sprintf(
+		"%s:%s:%s",
+		c.Request.FormValue("id"),
+		s.manifest.Api.SsoSalt,
+		timestamp,
+	)
+	token := fmt.Sprintf("%x", sha1.Sum([]byte(preToken)))
+
+	if token != c.Request.FormValue("token") {
+		c.AbortWithStatus(403)
+		return
+	}
+
+	var timestampVal int64
+	fmt.Sscanf(timestamp, "%d", &timestampVal)
+
+	if timestampVal < time.Now().Unix()-60*2 {
+		c.AbortWithStatus(403)
+		return
+	}
+
+	http.SetCookie(c.Writer, &http.Cookie{
+		Path:  "/",
+		Name:  "heroku-nav-data",
+		Value: c.Request.FormValue("nav-data"),
+	})
+
+	c.Redirect(302, "/")
 }
 
 func (s *Server) Start(bind string) error {
