@@ -40,7 +40,7 @@ func (s *Server) configure() {
 	group.POST("/resources", s.provisionResource)
 	group.PUT("/resources/:id", s.modifyResource)
 	group.DELETE("/resources/:id", s.deleteResource)
-	group.POST("/login", s.handleSSO)
+	group.POST("/sso", s.handleSSO)
 
 	s.router = router
 }
