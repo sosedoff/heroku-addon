@@ -35,12 +35,15 @@ func (s *Server) configure() {
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
 
+	// Heroku Single Sign On
+	router.POST("/heroku/sso", s.handleSSO)
+
+	// Password-protected routes
 	group := router.Group("/heroku")
 	group.Use(s.basicAuth)
 	group.POST("/resources", s.provisionResource)
 	group.PUT("/resources/:id", s.modifyResource)
 	group.DELETE("/resources/:id", s.deleteResource)
-	group.POST("/sso", s.handleSSO)
 
 	s.router = router
 }
